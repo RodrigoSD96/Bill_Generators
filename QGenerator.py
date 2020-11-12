@@ -17,13 +17,13 @@ def scan(pdf, page=0):
     num_pages = pdfReader.numPages
     pageObj = pdfReader.getPage(page)  # creating a page object
     pattern = re.compile(
-        r"(IMPORTE|I.V.A.|SUB-TOTAL|RETENCION I.S.R.|RET. I.V.A. SEGUN LEY|COMISIONES NETAS)\s+:(\d*\,?\d*.\d*)")
+        r"(IMPORTE|I.V.A.|TOTAL|I.S.R.|LEY|NETAS)\s+:(\d*\,?\d*.\d*)")
     text = pageObj.extractText()  # extracting text from page
-    print(text)
+    print(f'\nVisualization of PDF´s text: {text}')
     pdfFileObj.close()  # closing the pdf file object
     matches = dict(re.findall(pattern, text))
-    print(matches)
-    print("File scanned successfully!")
+    print(f'\nExtracted text from PDF: {matches}')
+    print("\nFile scanned successfully!")
     return matches, num_pages
 
 
@@ -41,26 +41,26 @@ if __name__ == '__main__':
         for pdf in range(num_pdfs):
             matches, num_pages = scan(pdf)
             if num_pages == 2:
-                print(f'Loading first page in PDF: ')
+                print(f'\nLoading bonus page in PDF: ')
                 val_unit += float(matches['IMPORTE'].replace(',', ''))
                 iva_tras += float(matches['I.V.A.'].replace(',', ''))
-                subtotal += float(matches['SUB-TOTAL'].replace(',', ''))
-                isr += float(matches['RETENCION I.S.R.'].replace(',', ''))
-                iva_ret += float(matches['RET. I.V.A. SEGUN LEY'].replace(',', ''))
-                comision += float(matches['COMISIONES NETAS'].replace(',', ''))
+                subtotal += float(matches['TOTAL'].replace(',', ''))
+                isr += float(matches['I.S.R.'].replace(',', ''))
+                iva_ret += float(matches['LEY'].replace(',', ''))
+                comision += float(matches['NETAS'].replace(',', ''))
                 print(f'Please select the file again to load next page')
                 matches, num_pages = scan(pdf, 1)
             val_unit += float(matches['IMPORTE'].replace(',', ''))
             iva_tras += float(matches['I.V.A.'].replace(',', ''))
-            subtotal += float(matches['SUB-TOTAL'].replace(',', ''))
-            isr += float(matches['RETENCION I.S.R.'].replace(',', ''))
-            iva_ret += float(matches['RET. I.V.A. SEGUN LEY'].replace(',', ''))
-            comision += float(matches['COMISIONES NETAS'].replace(',', ''))
+            subtotal += float(matches['TOTAL'].replace(',', ''))
+            isr += float(matches['I.S.R.'].replace(',', ''))
+            iva_ret += float(matches['LEY'].replace(',', ''))
+            comision += float(matches['NETAS'].replace(',', ''))
 
-        print('|Facturando para QUÁLITAS|')
+        print('\n|Facturando para QUÁLITAS|')
         print(f'Valor Unitario: {val_unit}')
-        print(f'Tasa de ISR: {isr/val_unit}')
-        print(f'Tasa de IVA Ret.: {iva_ret/val_unit}')
+        print(f'Tasa de ISR: {round(isr/val_unit,6)}')
+        print(f'Tasa de IVA Ret.: {round(iva_ret/val_unit,6)}')
         print(f'IVA Trasladado: {0.16*val_unit}')
         print(f'Subtotal: {subtotal}')
         print(f'Total Impuestos Trasladados: {iva_tras}')
