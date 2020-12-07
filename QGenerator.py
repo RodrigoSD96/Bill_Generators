@@ -23,6 +23,9 @@ def scan(pdf, page=0):
     pdfFileObj.close()  # closing the pdf file object
     matches = dict(re.findall(pattern, text))
     print(f'\nExtracted text from PDF: {matches}')
+    if matches == dict():
+        matches = dict([('IMPORTE', '0.00'), ('I.V.A.', '0.00'), ('TOTAL', '0.00'), ('I.S.R.', '0.00'), ('LEY', '0.00'),
+                        ('NETAS', '0.00')])
     print("\nFile scanned successfully!")
     return matches, num_pages
 
